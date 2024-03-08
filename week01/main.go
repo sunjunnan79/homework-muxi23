@@ -2,31 +2,69 @@ package main
 
 import (
 	"fmt"
-	"github.com/big-dust/homework-muxi23/week01/builder"
 )
 
-type Reader[T any] interface {
-	Read(dest []T) (n int, err error)
+type Builder[T any] struct {
+	data []T
 }
 
-type Writer[T any] interface {
-	Write(src []T) (n int, err error)
+// NewBuilder 初始化的
+func NewBuilder[T any]() *Builder[T] {
+	return &Builder[T]{
+		data: make([]T, 0),
+	}
 }
 
-type ReaderWriter[T any] interface {
-	Reader[T]
-	Writer[T]
+// Add 添加项的
+func (b *Builder[T]) Add(value T) {
+	b.data = append(b.data, value)
+}
+
+// PrintBuilder 输出的
+func (b *Builder[T]) PrintBuilder() {
+	fmt.Println(b.data)
+}
+
+// GetString 获取字符串类型的
+func (b *Builder[T]) GetString() (s string) {
+	s = "["
+	for i, j := range b.data {
+		if i > 0 {
+			s += " "
+		}
+		s += fmt.Sprintf("%v", j)
+	}
+	s += "]"
+	return
+}
+
+// Len 计算长度的
+func (b *Builder[T]) Len() int {
+	return len(b.data)
+}
+
+// ReSet 清除缓存的
+func (b *Builder[T]) ReSet() {
+	b.data = make([]T, 0)
 }
 
 func main() {
-	b := &builder.Builder[byte]{}
-	var r Reader[byte]
-	r = b
-	w := r.(Writer[byte])
-	rw := r.(ReaderWriter[byte])
-	n1, _ := rw.Write([]byte{1, 2, 3})
-	n2, _ := w.Write([]byte{4, 5, 6})
-	dest := make([]byte, n1+n2)
-	n3, _ := r.Read(dest)
-	fmt.Println(n1, n2, n3, dest)
+	intBuilder := NewBuilder[int]()
+	intBuilder.Add(10)
+	intBuilder.Add(20)
+	intBuilder.Add(30)
+	fmt.Printf("长度:%d\n", intBuilder.Len())
+	intBuilder.PrintBuilder()
+	fmt.Println("内容:" + intBuilder.GetString())
+
+	intBuilder.ReSet()
+	intBuilder.Add(30)
+	intBuilder.Add(20)
+	intBuilder.Add(10)
+	intBuilder.PrintBuilder()
+
+	strBuilder := NewBuilder[string]()
+	strBuilder.Add("hello")
+	strBuilder.Add("World!")
+	strBuilder.PrintBuilder()
 }
