@@ -13,7 +13,7 @@ import (
 
 // 用来等待所有的线程结束
 var wg sync.WaitGroup
-
+ 
 // 用来保证每次都只有一个goroutine对FinalData进行修改
 var lock sync.Mutex
 var t int
