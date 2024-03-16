@@ -13,7 +13,7 @@ import (
 
 // 用来等待所有的线程结束
 var wg sync.WaitGroup
- 
+
 // 用来保证每次都只有一个goroutine对FinalData进行修改
 var lock sync.Mutex
 var t int
@@ -111,7 +111,6 @@ func GetList(client *http.Client, page int) (school_id []int) {
 
 // 获取大学信息的函数
 func GetSchoolDetail(client *http.Client, school_id int, ch chan int) {
-	wg.Add(1)
 	ch <- 1
 	// 发送 HTTP 请求获取网页内容(不知道怎么搞到的signSafe)
 	url := fmt.Sprintf("https://static-data.gaokao.cn/www/2.0/school/%d/info.json", school_id)
@@ -152,6 +151,7 @@ func reptile(client *http.Client, pages int) {
 	for i := 0; i < pages; i++ {
 		school_id := GetList(client, i)
 		for _, j := range school_id {
+			wg.Add(1)
 			go GetSchoolDetail(client, j, ch)
 		}
 	}
@@ -168,9 +168,10 @@ func main() {
 	SignIn(client)
 	//爬取信息
 	reptile(client, 10)
+	//等待所有线程结束
+	wg.Wait()
 	//转化为字符串
 	content := strings.Join(FinalData, ",")
-	wg.Wait()
 	// 将字符串内容写入文件，权限为 0644
 	err := os.WriteFile("D:/gocode/src/muxi/term2/week3/output.txt", []byte(content), 0644)
 	if err != nil {
