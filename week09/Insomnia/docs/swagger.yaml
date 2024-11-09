@@ -1,0 +1,519 @@
+definitions:
+  request.SendEmailRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  response.ErrorResponse:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
+  response.GetMyDataResponse:
+    properties:
+      GetPost:
+        type: integer
+      likes:
+        type: integer
+      myPost:
+        type: integer
+    type: object
+  response.GetThreadResponse:
+    properties:
+      body:
+        type: string
+      createdAt:
+        type: string
+      exist:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      likes:
+        type: integer
+      postNumber:
+        type: integer
+      tUuid:
+        type: string
+      title:
+        type: string
+      topic:
+        type: string
+      uuId:
+        type: string
+    type: object
+  response.LikesResponse:
+    properties:
+      exist:
+        type: string
+    type: object
+  response.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: 一个匿名熬夜论坛
+  title: 不眠夜
+  version: "1.0"
+paths:
+  /api/v1/auth/changeAvatar:
+    post:
+      consumes:
+      - application/json
+      description: 更改头像接口
+      parameters:
+      - description: 新头像
+        in: body
+        name: newAvatar
+        required: true
+        schema:
+          type: string
+      - description: jwt验证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 头像更改成功
+          schema:
+            type: string
+        "400":
+          description: 请求参数错误
+          schema:
+            type: string
+        "500":
+          description: 内部错误
+          schema:
+            type: string
+      summary: 更改头像接口
+      tags:
+      - Auth
+  /api/v1/auth/changePassword:
+    post:
+      consumes:
+      - application/json
+      description: 更改密码接口
+      parameters:
+      - description: 邮箱
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
+      - description: 验证码
+        in: body
+        name: verificationCode
+        required: true
+        schema:
+          type: string
+      - description: jwt验证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 新密码
+        in: body
+        name: newPassword
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 密码更改成功
+          schema:
+            type: string
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 更改密码接口
+      tags:
+      - Auth
+  /api/v1/auth/getMyData:
+    post:
+      consumes:
+      - application/json
+      description: 获取数据
+      parameters:
+      - description: jwt验证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取数据成功
+          schema:
+            $ref: '#/definitions/response.GetMyDataResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            type: string
+        "500":
+          description: 内部错误
+          schema:
+            type: string
+      summary: 获取数据
+      tags:
+      - Auth
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户登录接口
+      parameters:
+      - description: 邮箱
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
+      - description: 密码
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            $ref: '#/definitions/response.LoginResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 用户登录接口
+      tags:
+      - Auth
+  /api/v1/auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: 用户注册接口
+      parameters:
+      - description: 邮箱
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
+      - description: 密码
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      - description: 验证码
+        in: body
+        name: verificationCode
+        required: true
+        schema:
+          type: string
+      - description: 头像
+        in: body
+        name: avatar
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            $ref: '#/definitions/response.LoginResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 用户注册接口
+      tags:
+      - Auth
+  /api/v1/common/sendEmail:
+    post:
+      consumes:
+      - application/json
+      description: 发送验证码接口
+      parameters:
+      - description: 邮箱
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/request.SendEmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 发送邮件成功
+          schema:
+            type: string
+        "404":
+          description: 邮箱服务器出错
+          schema:
+            type: string
+        "500":
+          description: 发送邮件失败
+          schema:
+            type: string
+      summary: 发送验证码接口
+      tags:
+      - SendEmail
+  /api/v1/thread/createThread:
+    post:
+      consumes:
+      - application/json
+      description: 用户创建帖子接口
+      parameters:
+      - description: 标题
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: 主题
+        in: body
+        name: topic
+        required: true
+        schema:
+          type: string
+      - description: 内容
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      - description: 图片链接列表
+        in: body
+        name: images
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      - description: jwt验证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 帖子创建成功
+          schema:
+            $ref: '#/definitions/response.GetThreadResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 用户创建帖子接口
+      tags:
+      - Thread
+  /api/v1/thread/destroyThread:
+    post:
+      consumes:
+      - application/json
+      description: 用户删除帖子接口
+      parameters:
+      - description: 帖子唯一标识
+        in: body
+        name: tUuid
+        required: true
+        schema:
+          type: string
+      - description: jwt验证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除帖子成功
+          schema:
+            type: string
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 删除帖子接口
+      tags:
+      - Thread
+  /api/v1/thread/getMyThreads:
+    post:
+      consumes:
+      - application/json
+      description: 获取指定用户的帖子列表接口
+      parameters:
+      - description: jwt验证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取帖子成功
+          schema:
+            items:
+              $ref: '#/definitions/response.GetThreadResponse'
+            type: array
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 获取用户的帖子列表接口
+      tags:
+      - Thread
+  /api/v1/thread/getThreads:
+    post:
+      consumes:
+      - application/json
+      description: 获取指定主题的帖子列表接口
+      parameters:
+      - description: 主题
+        in: body
+        name: topic
+        required: true
+        schema:
+          type: string
+      - description: jwt验证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取帖子成功
+          schema:
+            items:
+              $ref: '#/definitions/response.GetThreadResponse'
+            type: array
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 获取帖子列表接口
+      tags:
+      - Thread
+  /api/v1/thread/likeThread:
+    post:
+      consumes:
+      - application/json
+      description: 用户点赞或取消点赞帖子接口
+      parameters:
+      - description: 这里对应的就是tUuid,但是方便你复制粘贴,帖子唯一标识
+        in: body
+        name: uid
+        required: true
+        schema:
+          type: string
+      - description: jwt验证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 点赞状态切换成功
+          schema:
+            $ref: '#/definitions/response.LikesResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 点赞/取消点赞帖子接口
+      tags:
+      - Thread
+  /api/v1/thread/readThread:
+    post:
+      consumes:
+      - application/json
+      description: 获取指定帖子的详情信息接口
+      parameters:
+      - description: 帖子唯一标识
+        in: body
+        name: tUuid
+        required: true
+        schema:
+          type: string
+      - description: jwt验证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取帖子成功
+          schema:
+            $ref: '#/definitions/response.GetThreadResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 获取帖子详情接口
+      tags:
+      - Thread
+swagger: "2.0"
